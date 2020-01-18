@@ -80,21 +80,22 @@ bool getMicValue() {
   static bool micState = false;
   static int delta;
 
-  if (millis() - sampleTimer > 5) {
+  if (millis() - sampleTimer > 5) {   // каждые 5 мс
     sampleTimer = millis();
     int maxVal = 0;
     long averVal = 0;
-    for (byte i = 0; i < 50; i++) {
-      int thisRead = analogRead(MIC);
-      if (thisRead > maxVal) maxVal = thisRead;
-      averVal += thisRead;
+    for (byte i = 0; i < 50; i++) {             // 50 раз
+      int thisRead = analogRead(MIC);           // измеряем звук
+      if (thisRead > maxVal) maxVal = thisRead; // ищем макс
+      averVal += thisRead;                      // суммируем
     }
-    averVal /= 50;
-    micValF += (float)(averVal - micValF) * 0.01;
-    delta = (maxVal - micValF);
+    averVal /= 50;                              // ищем среднее
+    micValF += (float)(averVal - micValF) * 0.01; // фильтруем
+    delta = (maxVal - micValF);                 // ищем дельту max
     if (delta < 0) delta = 0;
     //Serial.println(delta);
   }
+  // переводим в 1 и 0 с гистерезисом
   if (delta > 20) micState = true;
   if (delta < 10) micState = false;
   return micState;
